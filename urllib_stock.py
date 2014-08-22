@@ -12,7 +12,7 @@ def get_stock_info(url):
     if len(stock_name) != 0:
         name = stock_name[0]
         sname = '1' + name[0:6] if name[-1] == 'Z' else '0' + name[0:6]
-        return '  [\"{0}\", \"\", \"date\", \"{1}\",  \"{2}\",  \"buy\"],\n'.format(sname, price[2], price[3])
+        return '  ["{0}", "", "date", "{1}",  "{2}",  "buy"],\n'.format(sname, price[2], price[3])
     else:
         return ''
 
