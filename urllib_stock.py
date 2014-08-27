@@ -1,8 +1,10 @@
-#抓取股票关注 0.3版
+#抓取股票关注 0.4版
 #python3.4.1
 
 import urllib.request   #网络模块
 import re               #正则表达式模块
+import codecs           #文件编码转换
+import sys
 
 def get_stock_info(url):
     """抓取网页，利用正则表达式匹配股票信息。
@@ -38,10 +40,11 @@ def write_stock_file(mystr, file_name):
         f.write(str(mystr))
 
 
-def main():
+def spider_go():
     """设置网页抓取地址头部、页面ID范围、地址尾部。
     合成需要抓取的网页地址，在ID范围内循环抓取数据存储在mystr中。
     最后写入文件。
+    工作目录为'F:/temp/'。
     """   
     url_head = str(input(u'请输入网址前部：\n'))
     url_tail = str(input(u'请输入网址后部：\n'))
@@ -53,9 +56,35 @@ def main():
     task_all = end_id - start_id + 1
 
     for i in range(end_id, start_id - 1, -1):
-        print('任务进度 (%d/%d)' % (task_id, task_all))
+        print('任务进度 ({0}/{1})'.format(task_id, task_all))
         mystr = get_stock_info(url_head + str(i) + url_tail)
         write_stock_file(mystr, file_name)
         task_id = task_id + 1
 
-    print('任务结束，数据存入文件： %s \n' % file_name)
+    print('任务结束，数据存入文件： {0} \n'.format(file_name))
+        
+
+def remove_r(file_new, file_old, file_save):
+    """从file_new文件中去除file_old中的重复行，并将结果保存在file_save文件中。
+    注意文件读取时的编码转换,工作目录为'F:/temp/'。
+    """
+    file_dir = 'f:/temp/'
+    file_new = file_dir + file_new
+    file_old = file_dir + file_old
+    file_save = file_dir + file_save
+
+    with codecs.open(file_old, 'r', 'utf-8') as f_o:
+        stock_id = re.findall(r'\["(\d+)"', str(f_o.read()))
+
+    with codecs.open(file_new, 'r', 'cp936') as f_n:
+        for line in f_n:
+            stock_id_new = re.findall(r'\["(\d+)"', str(line))
+            if stock_id_new[0] not in stock_id:
+                write_stock_file(line, file_save)
+            else:
+                print('{0}行重复，已去除!\n'.format(stock_id_new[0]))
+
+    print('任务结束，去重后的数据存入{0}\n'.format(file_save))
+    
+
+
