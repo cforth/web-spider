@@ -41,13 +41,12 @@ def write_stock_file(mystr, file_name):
 
 
 def spider_go():
-    """设置网页抓取地址头部、页面ID范围、地址尾部。
+    """设置网页抓取地址头部、页面ID范围。
     合成需要抓取的网页地址，在ID范围内循环抓取数据存储在mystr中。
     最后写入文件。
     工作目录为'F:/temp/'。
     """   
     url_head = str(input(u'请输入网址前部：\n'))
-    url_tail = str(input(u'请输入网址后部：\n'))
     start_id = int(input(u'请输入页面开始ID：\n'))
     end_id = int(input(u'请输入页面结束ID：\n'))
     file_name = 'f:/temp/' + str(input(u'请输入存入的文件名称:\n'))
@@ -57,7 +56,7 @@ def spider_go():
 
     for i in range(end_id, start_id - 1, -1):
         print('任务进度 ({0}/{1})'.format(task_id, task_all))
-        mystr = get_stock_info(url_head + str(i) + url_tail)
+        mystr = get_stock_info(url_head + str(i))
         write_stock_file(mystr, file_name)
         task_id = task_id + 1
 
