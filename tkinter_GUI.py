@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-#网络爬虫0.5版
+#网络爬虫0.6版
 # Python3.4.1
 
 from tkinter import *   #Tk模块
+from tkinter.scrolledtext import *
 import urllib.request   #网络模块
 import re               #正则表达式模块
 import codecs           #文件编码转换
@@ -25,8 +26,8 @@ class App(Frame):
         #将标签放置在窗口中的位置
         self.label.pack(fill='none', expand=1, ipadx=500, ipady=20, padx=1, pady=1, side='top')
 
-        #创建网址前部文本框
-        self.label1 = Label(text='输入网页抓取网址前部分：', font='Helvetica -15 bold',)
+        #创建网址前部文本输入框
+        self.label1 = Label(text='输入网页抓取网址前部分：', font='Helvetica -15 bold')
         self.label1.pack(fill='none', expand=1, ipadx=400,side='top')
         self.text1=Entry()
         self.text1.pack(fill='none', expand=1, ipadx=100, ipady=5, padx=5, pady=5, side='top')
@@ -35,8 +36,8 @@ class App(Frame):
         self.text1["textvariable"] = self.contents
         self.text1.config(font="Arial 10 bold")
 
-        #创建数字文本框
-        self.label2 = Label(text='输入起始序号：', font='Helvetica -15 bold',)
+        #创建数字文本输入框
+        self.label2 = Label(text='输入起始序号：', font='Helvetica -15 bold')
         self.label2.pack(fill='none', expand=1, ipadx=400,side='top')
         self.text2=Entry()
         self.text2.pack(fill='none', expand=1, ipadx=100, ipady=5, padx=5, pady=5, side='top')
@@ -45,7 +46,7 @@ class App(Frame):
         self.text2["textvariable"] = self.contents2
         self.text2.config(font="Arial 10 bold")
 
-        self.label3 = Label(text='输入结束序号：', font='Helvetica -15 bold',)
+        self.label3 = Label(text='输入结束序号：', font='Helvetica -15 bold')
         self.label3.pack(fill='none', expand=1, ipadx=400,side='top')
         self.text3=Entry()
         self.text3.pack(fill='none', expand=1, ipadx=100, ipady=5, padx=5, pady=5, side='top')
@@ -54,6 +55,10 @@ class App(Frame):
         self.text3["textvariable"] = self.contents3
         self.text3.config(font="Arial 10 bold")
 
+        #创建执行结果输出文本框
+        self.textout= ScrolledText(wrap = WORD,height=10)
+        self.textout.pack(fill='none', expand=1, padx=5, pady=5, side='top')
+             
         #创建一个按钮，点击时运行网络爬虫
         self.hi_there = Button()
         self.hi_there['text'] = "点击股票抓取"
@@ -65,10 +70,18 @@ class App(Frame):
         self.QUIT.pack(ipadx=60, ipady=10, padx=20, pady=10, side='right')
 
     def do_stock(self):
+        
         #运行网络爬虫
         spider_go(str(self.contents.get()), str(self.contents2.get()), str(self.contents3.get()))
+
         #可选，删除之前已获取股票数据中的重复行
-        #remove_r('new.txt','old.txt','save.txt')
+        remove_r('new.txt','old.txt','save.txt')
+
+        #可选，功能测试，在窗口中显示爬虫抓取后并去重的数据
+        with open('f:/temp/save.txt', 'r') as f:
+            textoutstr = str(f.read())
+
+        self.textout.insert(INSERT, textoutstr)
 
 #窗口模块结束
 
@@ -174,7 +187,7 @@ def remove_r(file_new, file_old, file_save):
 root = Tk()
     
 def main():
-    root.title('网络爬虫0.5版')
+    root.title('网络爬虫0.6版')
     root.geometry('500x500+200+100')  #窗口大小，位置
     root.maxsize(1000, 1000)          #窗口最大尺寸
     root.minsize(500, 500)
