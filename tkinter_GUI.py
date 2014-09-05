@@ -8,9 +8,17 @@ import urllib.request   #网络模块
 import re               #正则表达式模块
 import codecs           #文件编码转换
 import sys
+import tkinter.font
+import tkinter.messagebox
 
 ###############################################################
 #窗口模块开始
+
+def close_window(window):
+    """关闭窗口时给出提示"""
+    if tkinter.messagebox.askyesno("关闭窗口", "真的要退出吗？(是/否)", icon="question"):
+        window.destroy() 
+
 
 class App(Frame):
     """构建窗口程序
@@ -66,7 +74,7 @@ class App(Frame):
         self.hi_there.pack(ipadx=50, ipady=10, padx=20, pady=10, side='left')
 
         #创建退出按钮
-        self.QUIT = Button(text='QUIT', fg='red', command=root.destroy)
+        self.QUIT = Button(text='QUIT', fg='red', command=lambda : close_window(root))
         self.QUIT.pack(ipadx=60, ipady=10, padx=20, pady=10, side='right')
 
     def do_stock(self):
