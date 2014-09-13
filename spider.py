@@ -8,6 +8,14 @@ import urllib2
 import urllib
 import chardet    #检测网页编码
 import re
+import codecs
+
+def write_file(mystr, file_name):
+    """以写入方式打开文件，默认文件字符编码为utf-8，写入字符串mystr并自动关闭文件。
+    """
+    with codecs.open(file_name, 'a', 'utf-8') as f:
+        f.write(mystr)
+
 
 def get_url_info(url):
     """抓取网页内容
@@ -52,30 +60,36 @@ class Spider():
         self.end = end    
         self.finds = {}
 
-    def print_finds(self):
-        """格式化输出抓取结果
-        逆向排序后的finds_list为一个元素为元组的列表。
+    def format_finds(self):
+        """格式化抓取结果
+        顺序排序后的finds_list为一个元素为元组的列表。
         """
-        finds_list = sorted(self.finds.items(), key=lambda d:d[0], reverse = True)
+        finds_str = ''
+        finds_list = sorted(self.finds.items(), key=lambda d:d[0])
         for lst in finds_list :
-            print lst[0] + ':'
+            finds_str += lst[0] + ':\n'
             for key, value in lst[1].items() :
-                print '  ' + key + ' :'
+                finds_str +=  '  ' + key + ' :\n'
                 for v in value:
-                    print '    ' + v
-            print '\n'
-                
+                    finds_str +=  '    ' + v + '\n'
+            finds_str += '\n'
+        return finds_str
+
+    def save_finds(self, file_name) :
+        """保存格式化后的抓取结果到文件
+        """
+        write_file(self.format_finds(), file_name)
 
     def catch(self):
         """根据匹配规则批量抓取一些网页
-        顺序为页码从大到小，函数返回一个包含所有匹配目标信息的字典。
+        顺序为页码从小到大，函数返回一个包含所有匹配目标信息的字典。
         """
-        page = self.end
-        for i in range(self.end, self.start - 1, -1):
+        page = self.start
+        for i in range(self.start, self.end + 1, 1):
             text = get_url_info(self.url_head + str(i))
             find_dict = match_text(text, self.rules)
             self.finds[str(page)] = find_dict
-            page = page - 1
+            page += 1
         return self.finds
 
 
@@ -95,12 +109,15 @@ def main():
                   'keywords':u'<meta name="keywords" content="(.*?)">', #不贪婪匹配
                   'intro':u'<div class="intro"><p>(.*?)</p>'}           #不贪婪匹配
     url_head = 'http://book.douban.com/subject/'
-    start = 4866934
-    end = 4866943
+
     
-    my_spider = Spider(book_rules, url_head, start, end)
-    my_spider.catch()
-    my_spider.print_finds()
+    start = 4866934
+    end = start + 9
+    for i in range(3) :
+        my_spider = Spider(book_rules, url_head, start, end)
+        my_spider.catch()
+        my_spider.save_finds('f:/111.txt')
+        start, end = end + 1, end + 10
 
 if __name__ == '__main__' :
     main()
