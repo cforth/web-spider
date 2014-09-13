@@ -52,9 +52,22 @@ class Spider():
         self.end = end    
         self.finds = {}
 
+    def print_finds(self):
+        """格式化输出抓取结果
+        """
+        finds_list = sorted(self.finds.items(), key=lambda d:d[0])
+        for lst in finds_list :
+            print lst[0] + ':'
+            for key, value in lst[1].items() :
+                print '  ' + key + ' :'
+                for v in value:
+                    print '    ' + v
+            print '\n'
+                
+
     def catch(self):
         """根据匹配规则批量抓取一些网页
-        顺序为页码从大到小，函数返回一个包含所有匹配目标信息的字典。
+        顺序为页码从大到小，函数返回一个包含所有匹配目标信息的列表。
         """
         page = self.end
         for i in range(self.end, self.start - 1, -1):
@@ -62,6 +75,7 @@ class Spider():
             find_dict = match_text(text, self.rules)
             self.finds[str(page)] = find_dict
             page = page - 1
+        return self.finds
 
 
 def main():
@@ -83,7 +97,7 @@ def main():
     
     my_spider = Spider(book_rules, url_head, start, end)
     my_spider.catch()
-    print my_spider.finds
+    my_spider.print_finds()
 
 if __name__ == '__main__' :
     main()
