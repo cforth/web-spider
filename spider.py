@@ -92,10 +92,11 @@ def main():
     
 
     book_rules = {'title':u'<title>(.*)</title>',
-                  'keywords':u'<meta name="keywords" content="(.*)"><meta'}
+                  'keywords':u'<meta name="keywords" content="(.*?)">', #不贪婪匹配
+                  'intro':u'<div class="intro"><p>(.*?)</p>'}           #不贪婪匹配
     url_head = 'http://book.douban.com/subject/'
     start = 4866934
-    end = 4866935
+    end = 4866943
     
     my_spider = Spider(book_rules, url_head, start, end)
     my_spider.catch()
