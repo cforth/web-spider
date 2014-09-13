@@ -54,8 +54,9 @@ class Spider():
 
     def print_finds(self):
         """格式化输出抓取结果
+        逆向排序后的finds_list为一个元素为元组的列表。
         """
-        finds_list = sorted(self.finds.items(), key=lambda d:d[0])
+        finds_list = sorted(self.finds.items(), key=lambda d:d[0], reverse = True)
         for lst in finds_list :
             print lst[0] + ':'
             for key, value in lst[1].items() :
@@ -67,7 +68,7 @@ class Spider():
 
     def catch(self):
         """根据匹配规则批量抓取一些网页
-        顺序为页码从大到小，函数返回一个包含所有匹配目标信息的列表。
+        顺序为页码从大到小，函数返回一个包含所有匹配目标信息的字典。
         """
         page = self.end
         for i in range(self.end, self.start - 1, -1):
@@ -90,10 +91,11 @@ def main():
 ##    end = int(raw_input(u'请输入页面结束ID：\n'))
     
 
-    book_rules = {'title':u'<title>(.*)</title>'}
+    book_rules = {'title':u'<title>(.*)</title>',
+                  'keywords':u'<meta name="keywords" content="(.*)"><meta'}
     url_head = 'http://book.douban.com/subject/'
     start = 4866934
-    end = 4866940
+    end = 4866935
     
     my_spider = Spider(book_rules, url_head, start, end)
     my_spider.catch()
