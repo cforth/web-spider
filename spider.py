@@ -8,6 +8,15 @@ import urllib2
 import urllib
 import chardet    #检测网页编码
 import re
+import codecs
+from time import time
+
+def write_file(mystr, file_name):
+    """以写入方式打开文件，默认文件字符编码为utf-8，写入字符串mystr并自动关闭文件。
+    """
+    with codecs.open(file_name, 'a', 'utf-8') as f:
+        f.write(mystr)
+
 
 def get_url_info(url):
     """抓取网页内容
@@ -44,6 +53,7 @@ def match_text(text, rules):
 class Spider():
     """网页爬虫类
     从标准输入获取网址url_head、起始页序号start、终止页序号end
+    self.finds为存储抓取结果的字典，self.finds_str为抓取结果转为字符串
     """
     def __init__(self, rules, url_head, start, end):
         self.rules = rules
@@ -51,35 +61,41 @@ class Spider():
         self.start = start
         self.end = end    
         self.finds = {}
-
-    def print_finds(self):
-        """格式化输出抓取结果
-        逆向排序后的finds_list为一个元素为元组的列表。
-        """
-        finds_list = sorted(self.finds.items(), key=lambda d:d[0], reverse = True)
-        for lst in finds_list :
-            print lst[0] + ':'
-            for key, value in lst[1].items() :
-                print '  ' + key + ' :'
-                for v in value:
-                    print '    ' + v
-            print '\n'
-                
+        self.finds_str = ''
 
     def catch(self):
         """根据匹配规则批量抓取一些网页
         顺序为页码从大到小，函数返回一个包含所有匹配目标信息的字典。
         """
-        page = self.end
-        for i in range(self.end, self.start - 1, -1):
+        for i in range(self.start, self.end + 1, 1):
             text = get_url_info(self.url_head + str(i))
             find_dict = match_text(text, self.rules)
-            self.finds[str(page)] = find_dict
-            page = page - 1
-        return self.finds
+            self.finds[str(i)] = find_dict
+
+    def format_finds(self):
+        """格式化输出抓取结果
+        将字典根据key进行排序后转为字符串
+        """
+        finds_list = sorted(self.finds.items(), key=lambda d:d[0])
+        for lst in finds_list :
+            self.finds_str += '%s :\n' % lst[0]
+            for key, value in lst[1].items() :
+                self.finds_str += '  %s :\n' % key
+                for v in value:
+                    self.finds_str += '    %s\n' % v
+            self.finds_str += '\n\n'
+
+    def save_finds(self, file_name):
+        """将抓取结果字符串写入文件
+        """
+        write_file(self.finds_str, file_name)
+
+
 
 
 def main():
+    t = time()         #记录程序运行开始时间
+    
 ##    stock_rules = {'stock_id':'\d+\.S[ZH]',                                         #正则匹配股票代码
 ##             'price_inid':'<span id="ctl04_lbSpj">(\d+\.\d+)</span>',               #正则匹配初始价
 ##             'price_target':'<span id="ctl04_txTgtPrice">(\d+\.\d+)</span>',        #正则匹配目标价
@@ -100,7 +116,11 @@ def main():
     
     my_spider = Spider(book_rules, url_head, start, end)
     my_spider.catch()
-    my_spider.print_finds()
+    my_spider.format_finds()
+    my_spider.save_finds('f:/111.txt')
+
+    print "total run time:"
+    print time() - t   #记录程序运行总时间
 
 if __name__ == '__main__' :
     main()
