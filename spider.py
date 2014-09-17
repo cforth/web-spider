@@ -9,6 +9,7 @@ import urllib
 import chardet    #检测网页编码
 import re
 import codecs
+import sys
 from time import time
 
 def write_file(mystr, file_name):
@@ -68,7 +69,11 @@ class Spider():
         顺序为页码从大到小，函数返回一个包含所有匹配目标信息的字典。
         """
         for i in range(self.start, self.end + 1, 1):
-            text = get_url_info(self.url_head + str(i))
+            try:
+                text = get_url_info(self.url_head + str(i))
+            except:
+                print(u'网页获取失败！终止任务！错误信息：{0}'.format(sys.exc_info()[0]))
+                return
             find_dict = match_text(text, self.rules)
             self.finds[str(i)] = find_dict
 
@@ -108,8 +113,9 @@ def main():
     
 
     book_rules = {'title':u'<title>(.*)</title>',
-                  'keywords':u'<meta name="keywords" content="(.*?)">', #不贪婪匹配
-                  'intro':u'<div class="intro"><p>(.*?)</p>'}           #不贪婪匹配
+                  'keywords':u'<meta name="keywords" content="(.*?)">',  #不贪婪匹配
+                  'intro':u'<div class="intro"><p>(.*?)</p>',            #不贪婪匹配
+                  'price':u'定价:</span>(.*?)<br/>'}                     #不贪婪匹配
     url_head = 'http://book.douban.com/subject/'
     start = 4866934
     end = 4866943
@@ -117,10 +123,10 @@ def main():
     my_spider = Spider(book_rules, url_head, start, end)
     my_spider.catch()
     my_spider.format_finds()
-    my_spider.save_finds('f:/111.txt')
+    my_spider.save_finds('f:/temp/spider/111.txt')
 
-    print "total run time:"
-    print time() - t   #记录程序运行总时间
+    t = time() - t
+    print "total run time: %f" % t   #记录程序运行总时间
 
 if __name__ == '__main__' :
     main()
