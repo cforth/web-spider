@@ -93,7 +93,11 @@ class Spider():
     def save_finds(self, file_name):
         """将抓取结果字符串写入文件
         """
-        write_file(self.finds_str, file_name)
+        try:
+            write_file(self.finds_str, file_name)
+        except:
+            print(u'文件保存失败！错误信息：{0}'.format(sys.exc_info()[0]))
+            return
 
 
 
