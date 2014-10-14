@@ -86,10 +86,13 @@ class App(Frame):
         remove_r('new.txt','old.txt','save.txt')
 
         #可选，功能测试，在窗口中显示爬虫抓取后并去重的数据
-        with open('f:/temp/save.txt', 'r') as f:
-            textoutstr = str(f.read())
+        try:
+            with open('f:/temp/stock/save.txt', 'r') as f:
+                textoutstr = str(f.read())
 
-        self.textout.insert(INSERT, textoutstr)
+            self.textout.insert(INSERT, textoutstr)
+        except FileNotFoundError:
+            print("FileNotFoundError!", end='')
 
 #窗口模块结束
 
@@ -147,7 +150,7 @@ def spider_go(url_head, start, end):
         print('序号输入有误！终止任务！起始序号必须小于或等于结束序号！')
         return
         
-    file_name = 'f:/temp/new.txt'
+    file_name = 'f:/temp/stock/new.txt'
     mystr = ''
     task_id = 1
     task_all = end_id - start_id + 1
@@ -169,7 +172,7 @@ def remove_r(file_new, file_old, file_save):
     """从file_new文件中去除file_old中的重复行，并将结果保存在file_save文件中。
     注意文件读取时的编码转换,工作目录为'F:/temp/'。
     """
-    file_dir = 'f:/temp/'
+    file_dir = 'f:/temp/stock/'
     file_new = file_dir + file_new
     file_old = file_dir + file_old
     file_save = file_dir + file_save
