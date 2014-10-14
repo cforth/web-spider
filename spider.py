@@ -4,19 +4,42 @@
 # 根据提供的匹配规则和网址来匹配一切网页内容
 # Python 2.7
 
-import urllib2
-import urllib
-import chardet    #检测网页编码
-import re
-import codecs
 import sys
-from time import time
+import urllib2
+import chardet          #检测网页编码模块
+import re               #正则表达式模块
+import codecs           #处理字符编码模块
+import pickle           #持久化对象模块
+from time import time   #时间模块，用于测试运行时间
+
 
 def write_file(mystr, file_name):
     """以写入方式打开文件，默认文件字符编码为utf-8，写入字符串mystr并自动关闭文件。
     """
-    with codecs.open(file_name, 'a', 'utf-8') as f:
-        f.write(mystr)
+    try:
+        with codecs.open(file_name, 'a', 'utf-8') as f:
+            f.write(mystr)
+    except:
+        print 'File write Error! FileName:%s' % file_name 
+
+def dump_file(myobj, file_name):
+    """使用pickle将持久化对象myobj保存在磁盘文件中。
+    """
+    try:
+        with open(file_name, 'wb') as f:
+            pickle.dump(myobj, f)
+    except:
+        print 'Obj Dump Error!'
+
+
+def load_file(file_name):
+    """使用pickle将持久化对象从磁盘文件中读取并恢复。
+    """
+    try:
+        with open(file_name, 'rb') as f:
+            return pickle.load(f)
+    except:
+        print 'Obj Load Error!'
 
 
 def get_url_info(url):
@@ -77,33 +100,38 @@ class Spider():
             find_dict = match_text(text, self.rules)
             self.finds[str(i)] = find_dict
 
-    def format_finds(self):
+    def print_finds(self):
         """格式化输出抓取结果
         将字典根据key进行排序后转为字符串
         """
         finds_list = sorted(self.finds.items(), key=lambda d:d[0])
         for lst in finds_list :
-            self.finds_str += '%s :\n' % lst[0]
+            print '%s :\n' % lst[0]
             for key, value in lst[1].items() :
-                self.finds_str += '  %s :\n' % key
+                print '  %s :\n' % key
                 for v in value:
-                    self.finds_str += '    %s\n' % v
-            self.finds_str += '\n\n'
+                    print '    %s\n' % v
+            print '\n\n'
 
     def save_finds(self, file_name):
-        """将抓取结果字符串写入文件
+        """将抓取结果字典finds写入磁盘文件
         """
         try:
-            write_file(self.finds_str, file_name)
+            dump_file(self.finds, file_name)
         except:
-            print(u'文件保存失败！错误信息：{0}'.format(sys.exc_info()[0]))
-            return
+            print(u'对象保存失败！错误信息：{0}'.format(sys.exc_info()[0]))
 
-
+    def load_finds(self, file_name):
+        """将finds对象从磁盘读取并恢复
+        """
+        try:
+            return load_file(file_name)
+        except:
+            print(u'对象读取失败！错误信息：{0}'.format(sys.exc_info()[0]))
 
 
 def main():
-    t = time()         #记录程序运行开始时间
+    t = time()                                                                  #记录程序运行开始时间
     
 ##    stock_rules = {'stock_id':'\d+\.S[ZH]',                                         #正则匹配股票代码
 ##             'price_inid':'<span id="ctl04_lbSpj">(\d+\.\d+)</span>',               #正则匹配初始价
@@ -117,20 +145,23 @@ def main():
     
 
     book_rules = {'title':u'<title>(.*)</title>',
-                  'keywords':u'<meta name="keywords" content="(.*?)">',  #不贪婪匹配
-                  'intro':u'<div class="intro"><p>(.*?)</p>',            #不贪婪匹配
-                  'price':u'定价:</span>(.*?)<br/>'}                     #不贪婪匹配
+                  'keywords':u'<meta name="keywords" content="(.*?)">',         #不贪婪匹配
+                  'intro':u'<div class="intro"><p>(.*?)</p>',                   #不贪婪匹配
+                  'price':u'定价:</span>(.*?)<br/>'}                            #不贪婪匹配
     url_head = 'http://book.douban.com/subject/'
     start = 4866934
     end = 4866943
     
     my_spider = Spider(book_rules, url_head, start, end)
     my_spider.catch()
-    my_spider.format_finds()
-    my_spider.save_finds('f:/temp/spider/111.txt')
+    my_spider.print_finds()
+    
+    my_spider.save_finds('f:/temp/spider/finds')                                #将抓取结果对象保存至磁盘
+    mydict = my_spider.load_finds('f:/temp/spider/finds')                       #从磁盘恢复抓取结果对象
+    print 'True' if my_spider.finds == mydict else 'False'                      #测试从磁盘恢复的对象与原对象是否相等
 
     t = time() - t
-    print "total run time: %f" % t   #记录程序运行总时间
+    print "total run time: %f" % t                                              #记录程序运行总时间
 
 if __name__ == '__main__' :
     main()
