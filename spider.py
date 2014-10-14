@@ -12,6 +12,31 @@ import codecs           #处理字符编码模块
 import pickle           #持久化对象模块
 from time import time   #时间模块，用于测试运行时间
 
+def print_list(the_list):
+    """格式化输出列表（非嵌套）
+    """
+    for each_item in the_list:
+        print each_item
+
+def print_dict(the_dict, indent=False, level=0):
+    """格式化打印出嵌套的字典对象,如果最终值为列表时，使用print_list打印列表
+    indent默认为False，不打开缩进特性
+    缩进级别level默认为0
+    """
+    for key, value in the_dict.items() :
+        if isinstance(value, dict):
+            print '%s:' % key
+            print_dict(value, indent, level+1)
+        else:
+            if indent:
+                for tab_stop in range(level):
+                    print '\t',             
+            print '%s:' % key,
+            if isinstance(value, list):
+                print_list(value)
+            else:
+                print value
+
 
 def write_file(mystr, file_name):
     """以写入方式打开文件，默认文件字符编码为utf-8，写入字符串mystr并自动关闭文件。
@@ -21,6 +46,7 @@ def write_file(mystr, file_name):
             f.write(mystr)
     except:
         print 'File write Error! FileName:%s' % file_name 
+
 
 def dump_file(myobj, file_name):
     """使用pickle将持久化对象myobj保存在磁盘文件中。
@@ -85,7 +111,6 @@ class Spider():
         self.start = start
         self.end = end    
         self.finds = {}
-        self.finds_str = ''
 
     def catch(self):
         """根据匹配规则批量抓取一些网页
@@ -99,19 +124,6 @@ class Spider():
                 return
             find_dict = match_text(text, self.rules)
             self.finds[str(i)] = find_dict
-
-    def print_finds(self):
-        """格式化输出抓取结果
-        将字典根据key进行排序后转为字符串
-        """
-        finds_list = sorted(self.finds.items(), key=lambda d:d[0])
-        for lst in finds_list :
-            print '%s :\n' % lst[0]
-            for key, value in lst[1].items() :
-                print '  %s :\n' % key
-                for v in value:
-                    print '    %s\n' % v
-            print '\n\n'
 
     def save_finds(self, file_name):
         """将抓取结果字典finds写入磁盘文件
@@ -154,7 +166,8 @@ def main():
     
     my_spider = Spider(book_rules, url_head, start, end)
     my_spider.catch()
-    my_spider.print_finds()
+##    print my_spider.finds
+    print_dict(my_spider.finds, indent=True)                                    #格式化输出抓取结果对象
     
     my_spider.save_finds('f:/temp/spider/finds')                                #将抓取结果对象保存至磁盘
     mydict = my_spider.load_finds('f:/temp/spider/finds')                       #从磁盘恢复抓取结果对象
