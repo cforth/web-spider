@@ -1,5 +1,7 @@
 #网络爬虫
 
+![web-spider](http://img.my.csdn.net/uploads/201409/04/1409815901_9041.jpg)
+
 使用Python实现，批量抓取网页上的特定内容。
 
 ##[**通用版**](https://github.com/cforth/web-spider/blob/master/spider.py)
