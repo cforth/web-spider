@@ -10,7 +10,7 @@ import chardet          #检测网页编码模块
 import re               #正则表达式模块
 import codecs           #处理字符编码模块
 import pickle           #持久化对象模块
-from time import time   #时间模块，用于测试运行时间
+import time             #时间模块，用于测试运行时间
 
 def print_list(the_list):
     """格式化输出列表（非嵌套）
@@ -109,47 +109,55 @@ class Spider():
     从标准输入获取网址url_head、起始页序号start、终止页序号end
     self.finds为存储抓取结果的字典，self.finds_str为抓取结果转为字符串
     """
-    def __init__(self, rules, url_head, start, end):
+    def __init__(self, rules, url_head, start, end, delaySecs=0):
         self.rules = rules
         self.url_head = url_head
         self.start = start
-        self.end = end    
+        self.end = end
+        self.delaySecs = delaySecs
         self.finds = {}
 
     def catch(self):
         """根据匹配规则批量抓取一些网页
-        顺序为页码从大到小，函数返回一个包含所有匹配目标信息的字典。
+        顺序为页码从小到大，函数返回一个包含所有匹配目标信息的字典。
         """
+        the_page = 1
+        pages = self.end - self.start + 1
         for i in range(self.start, self.end + 1, 1):
             try:
                 text = get_url_info(self.url_head + str(i))
+                find_dict = match_text(text, self.rules)
+                self.finds[str(i)] = find_dict
+                time.sleep(self.delaySecs)                                  #设置每次抓取的延时，默认为0秒
             except:
-                print(('网页获取失败！终止任务！错误信息：{0}'.format(sys.exc_info()[0])))
-                return
-            find_dict = match_text(text, self.rules)
-            self.finds[str(i)] = find_dict
-
+                print('网页获取失败！错误信息：{0}'.format(sys.exc_info()[0]))
+                pass
+            print('任务进度({0}/{1})'.format(str(the_page), str(pages)))
+            the_page += 1
+            
     def save_finds(self, file_name):
         """将抓取结果字典finds写入磁盘文件
         """
         try:
             dump_file(self.finds, file_name)
+            print('对象保存成功！文件路径:{0}'.format(file_name))
         except:
-            print(('对象保存失败！错误信息：{0}'.format(sys.exc_info()[0])))
+            print('对象保存失败！错误信息：{0}'.format(sys.exc_info()[0]))
 
     def load_finds(self, file_name):
         """将finds对象从磁盘读取并恢复
         """
         try:
-            return load_file(file_name)
+            self.finds = load_file(file_name)
+            print('对象读取成功！文件路径:{0}'.format(file_name))
         except:
-            print(('对象读取失败！错误信息：{0}'.format(sys.exc_info()[0])))
+            print('对象读取失败！错误信息：{0}'.format(sys.exc_info()[0]))
 
 
 def main():
-    t = time()                                                                  #记录程序运行开始时间
+    t = time.time()                                                             #记录程序运行开始时间
     
-##    the_rules = {'stock_id':'\d+\.S[ZH]',                                         #正则匹配股票代码
+##    the_rules = {'stock_id':'\d+\.S[ZH]',                                           #正则匹配股票代码
 ##             'price_inid':'<span id="ctl04_lbSpj">(\d+\.\d+)</span>',               #正则匹配初始价
 ##             'price_target':'<span id="ctl04_txTgtPrice">(\d+\.\d+)</span>',        #正则匹配目标价
 ##             'grade':u'<span id="ctl04_bgpj">([\u4e00-\u9fa5]+)</span>',            #正则匹配评级
@@ -165,19 +173,18 @@ def main():
                   'intro':'<div class="intro"><p>(.*?)</p>',                   #不贪婪匹配
                   'price':'定价:</span>(.*?)<br/>'}                            #不贪婪匹配
     url_head = 'http://book.douban.com/subject/'
-    start = 4866934
-    end = 4866936
+    start = 4866900
+    end = 4866909
     
-    my_spider = Spider(the_rules, url_head, start, end)
+    my_spider = Spider(the_rules, url_head, start, end, 1)
     my_spider.catch()
 ##    print my_spider.finds
-    print_dict(my_spider.finds, indent=True)                                    #格式化输出抓取结果对象
-    
-    my_spider.save_finds('f:/temp/spider/finds')                                #将抓取结果对象保存至磁盘
-    mydict = my_spider.load_finds('f:/temp/spider/finds')                       #从磁盘恢复抓取结果对象
-    print('True' if my_spider.finds == mydict else 'False')                      #测试从磁盘恢复的对象与原对象是否相等
 
-    t = time() - t
+    my_spider.save_finds('f:/temp/spider/finds')                                 #将抓取结果对象保存至磁盘
+##    my_spider.load_finds('f:/temp/spider/finds')                                 #从磁盘恢复抓取结果对象
+    print_dict(my_spider.finds, indent=True)                                     #格式化输出抓取结果对象
+    
+    t = time.time() - t
     print("total run time: %f" % t)                                              #记录程序运行总时间
 
 if __name__ == '__main__' :
