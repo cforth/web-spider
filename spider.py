@@ -45,31 +45,23 @@ def print_dict(the_dict, indent=False, level=0):
 def write_file(mystr, file_name):
     """以写入方式打开文件，默认文件字符编码为utf-8，写入字符串mystr并自动关闭文件。
     """
-    try:
-        with codecs.open(file_name, 'a', 'utf-8') as f:
-            f.write(mystr)
-    except:
-        print('File write Error! FileName:%s' % file_name) 
+    with codecs.open(file_name, 'a', 'utf-8') as f:
+        f.write(mystr)
 
 
 def dump_file(myobj, file_name):
     """使用pickle将持久化对象myobj保存在磁盘文件中。
     """
-    try:
-        with open(file_name, 'wb') as f:
-            pickle.dump(myobj, f)
-    except:
-        print('Obj Dump Error!')
+    with open(file_name, 'wb') as f:
+        pickle.dump(myobj, f)
 
 
 def load_file(file_name):
     """使用pickle将持久化对象从磁盘文件中读取并恢复。
     """
-    try:
-        with open(file_name, 'rb') as f:
-            return pickle.load(f)
-    except:
-        print('Obj Load Error!')
+    with open(file_name, 'rb') as f:
+        return pickle.load(f)
+
 
 
 def get_url_info(url):
@@ -107,15 +99,15 @@ def match_text(text, rules):
 class Spider():
     """网页爬虫类
     从标准输入获取网址url_head、起始页序号start、终止页序号end
-    self.finds为存储抓取结果的字典，self.finds_str为抓取结果转为字符串
+    self.finds为存储抓取结果的字典
     """
-    def __init__(self, rules, url_head, start, end, delaySecs=0):
+    def __init__(self, rules, url_head, start, end, finds = {}, delaySecs=0):
         self.rules = rules
         self.url_head = url_head
         self.start = start
         self.end = end
         self.delaySecs = delaySecs
-        self.finds = {}
+        self.finds = finds
 
     def catch(self):
         """根据匹配规则批量抓取一些网页
@@ -125,13 +117,16 @@ class Spider():
         pages = self.end - self.start + 1
         for i in range(self.start, self.end + 1, 1):
             try:
-                text = get_url_info(self.url_head + str(i))
-                find_dict = match_text(text, self.rules)
-                self.finds[str(i)] = find_dict
-                time.sleep(self.delaySecs)                                  #设置每次抓取的延时，默认为0秒
+                if str(i) not in self.finds:                                    #判断需抓取的页面是否已经抓取过，抓取过不重复抓取
+                    text = get_url_info(self.url_head + str(i))
+                    find_dict = match_text(text, self.rules)
+                    self.finds[str(i)] = find_dict
+                    print('页面抓取成功！页面号：{0}'.format(str(i)))
+                    time.sleep(self.delaySecs)                                  #设置每次抓取的延时，默认为0秒
+                else:
+                    print('页面抓取结果已存在！不重复抓取！页面号：{0}'.format(str(i)))
             except:
                 print('网页获取失败！错误信息：{0}'.format(sys.exc_info()[0]))
-                pass
             print('任务进度({0}/{1})'.format(str(the_page), str(pages)))
             the_page += 1
             
@@ -151,7 +146,7 @@ class Spider():
             self.finds = load_file(file_name)
             print('对象读取成功！文件路径:{0}'.format(file_name))
         except:
-            print('对象读取失败！错误信息：{0}'.format(sys.exc_info()[0]))
+            print('对象读取失败！finds对象不变！错误信息：{0}'.format(sys.exc_info()[0]))
 
 
 def main():
@@ -174,15 +169,16 @@ def main():
                   'price':'定价:</span>(.*?)<br/>'}                            #不贪婪匹配
     url_head = 'http://book.douban.com/subject/'
     start = 4866900
-    end = 4866909
+    end = 4866910
+    finds = {}
+    delaySecs = 1
     
-    my_spider = Spider(the_rules, url_head, start, end, 1)
-    my_spider.catch()
+    my_spider = Spider(the_rules, url_head, start, end, finds, delaySecs)
 ##    print my_spider.finds
-
-    my_spider.save_finds('f:/temp/spider/finds')                                 #将抓取结果对象保存至磁盘
-##    my_spider.load_finds('f:/temp/spider/finds')                                 #从磁盘恢复抓取结果对象
+    my_spider.load_finds('f:/temp/spider/finds')                                 #从磁盘恢复抓取结果对象
+    my_spider.catch()                                                            #抓取页面
     print_dict(my_spider.finds, indent=True)                                     #格式化输出抓取结果对象
+    my_spider.save_finds('f:/temp/spider/finds')                                 #将抓取结果对象保存至磁盘
     
     t = time.time() - t
     print("total run time: %f" % t)                                              #记录程序运行总时间
