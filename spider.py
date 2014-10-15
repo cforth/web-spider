@@ -2,10 +2,10 @@
 # 网络爬虫
 # 通用网络爬虫实现
 # 根据提供的匹配规则和网址来匹配一切网页内容
-# Python 2.7
+# Python 3.4
 
 import sys
-import urllib2
+import urllib.request
 import chardet          #检测网页编码模块
 import re               #正则表达式模块
 import codecs           #处理字符编码模块
@@ -15,27 +15,31 @@ from time import time   #时间模块，用于测试运行时间
 def print_list(the_list):
     """格式化输出列表（非嵌套）
     """
-    for each_item in the_list:
-        print each_item
+    if len(the_list) == 0:
+        print('')
+    else:
+        for each_item in the_list:
+            print(each_item)
 
 def print_dict(the_dict, indent=False, level=0):
     """格式化打印出嵌套的字典对象,如果最终值为列表时，使用print_list打印列表
     indent默认为False，不打开缩进特性
     缩进级别level默认为0
     """
-    for key, value in the_dict.items() :
+    for key, value in list(the_dict.items()) :
         if isinstance(value, dict):
-            print '%s:' % key
+            print('%s:' % key)
             print_dict(value, indent, level+1)
         else:
             if indent:
                 for tab_stop in range(level):
-                    print '\t',             
-            print '%s:' % key,
+                    print('\t', end='')             
+            print('%s:' % key, end='')
             if isinstance(value, list):
                 print_list(value)
             else:
-                print value
+                print(value)
+    print('\n')
 
 
 def write_file(mystr, file_name):
@@ -45,7 +49,7 @@ def write_file(mystr, file_name):
         with codecs.open(file_name, 'a', 'utf-8') as f:
             f.write(mystr)
     except:
-        print 'File write Error! FileName:%s' % file_name 
+        print('File write Error! FileName:%s' % file_name) 
 
 
 def dump_file(myobj, file_name):
@@ -55,7 +59,7 @@ def dump_file(myobj, file_name):
         with open(file_name, 'wb') as f:
             pickle.dump(myobj, f)
     except:
-        print 'Obj Dump Error!'
+        print('Obj Dump Error!')
 
 
 def load_file(file_name):
@@ -65,7 +69,7 @@ def load_file(file_name):
         with open(file_name, 'rb') as f:
             return pickle.load(f)
     except:
-        print 'Obj Load Error!'
+        print('Obj Load Error!')
 
 
 def get_url_info(url):
@@ -74,10 +78,10 @@ def get_url_info(url):
     返回包含网页内容的字符串。
     """
     user_agent = 'Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.6 Safari/537.36'
-    req = urllib2.Request(url)
+    req = urllib.request.Request(url)
     req.add_header('User-Agent', user_agent)
 
-    data = urllib2.urlopen(req).read()            #抓取网页
+    data = urllib.request.urlopen(req).read()     #抓取网页
     html_code = chardet.detect(data)              #通过chardet模块检测编码
     return data.decode(html_code['encoding'])     
 
@@ -120,7 +124,7 @@ class Spider():
             try:
                 text = get_url_info(self.url_head + str(i))
             except:
-                print(u'网页获取失败！终止任务！错误信息：{0}'.format(sys.exc_info()[0]))
+                print(('网页获取失败！终止任务！错误信息：{0}'.format(sys.exc_info()[0])))
                 return
             find_dict = match_text(text, self.rules)
             self.finds[str(i)] = find_dict
@@ -131,7 +135,7 @@ class Spider():
         try:
             dump_file(self.finds, file_name)
         except:
-            print(u'对象保存失败！错误信息：{0}'.format(sys.exc_info()[0]))
+            print(('对象保存失败！错误信息：{0}'.format(sys.exc_info()[0])))
 
     def load_finds(self, file_name):
         """将finds对象从磁盘读取并恢复
@@ -139,42 +143,42 @@ class Spider():
         try:
             return load_file(file_name)
         except:
-            print(u'对象读取失败！错误信息：{0}'.format(sys.exc_info()[0]))
+            print(('对象读取失败！错误信息：{0}'.format(sys.exc_info()[0])))
 
 
 def main():
     t = time()                                                                  #记录程序运行开始时间
     
-##    stock_rules = {'stock_id':'\d+\.S[ZH]',                                         #正则匹配股票代码
+##    the_rules = {'stock_id':'\d+\.S[ZH]',                                         #正则匹配股票代码
 ##             'price_inid':'<span id="ctl04_lbSpj">(\d+\.\d+)</span>',               #正则匹配初始价
 ##             'price_target':'<span id="ctl04_txTgtPrice">(\d+\.\d+)</span>',        #正则匹配目标价
 ##             'grade':u'<span id="ctl04_bgpj">([\u4e00-\u9fa5]+)</span>',            #正则匹配评级
 ##             'trade':u'<span id="ctl04_lbHylbmc">([\u4e00-\u9fa5]+)</span>',        #正则匹配行业
 ##             'stock_date':'<span id="ctl04_lblzhxgrq" style="display:inline-block;width:90%;">(\d+\-\d+\-\d+)</span>'}  #正则匹配日期
-##    url_head = str(raw_input(u'请输入网址前部：\n'))
-##    start = int(raw_input(u'请输入页面开始ID：\n'))
-##    end = int(raw_input(u'请输入页面结束ID：\n'))
+##    url_head = str(input(u'请输入网址前部：\n'))
+##    start = int(input(u'请输入页面开始ID：\n'))
+##    end = int(input(u'请输入页面结束ID：\n'))
     
 
-    book_rules = {'title':u'<title>(.*)</title>',
-                  'keywords':u'<meta name="keywords" content="(.*?)">',         #不贪婪匹配
-                  'intro':u'<div class="intro"><p>(.*?)</p>',                   #不贪婪匹配
-                  'price':u'定价:</span>(.*?)<br/>'}                            #不贪婪匹配
+    the_rules = {'title':'<title>(.*)</title>',
+                  'keywords':'<meta name="keywords" content="(.*?)">',         #不贪婪匹配
+                  'intro':'<div class="intro"><p>(.*?)</p>',                   #不贪婪匹配
+                  'price':'定价:</span>(.*?)<br/>'}                            #不贪婪匹配
     url_head = 'http://book.douban.com/subject/'
     start = 4866934
-    end = 4866943
+    end = 4866936
     
-    my_spider = Spider(book_rules, url_head, start, end)
+    my_spider = Spider(the_rules, url_head, start, end)
     my_spider.catch()
 ##    print my_spider.finds
     print_dict(my_spider.finds, indent=True)                                    #格式化输出抓取结果对象
     
     my_spider.save_finds('f:/temp/spider/finds')                                #将抓取结果对象保存至磁盘
     mydict = my_spider.load_finds('f:/temp/spider/finds')                       #从磁盘恢复抓取结果对象
-    print 'True' if my_spider.finds == mydict else 'False'                      #测试从磁盘恢复的对象与原对象是否相等
+    print('True' if my_spider.finds == mydict else 'False')                      #测试从磁盘恢复的对象与原对象是否相等
 
     t = time() - t
-    print "total run time: %f" % t                                              #记录程序运行总时间
+    print("total run time: %f" % t)                                              #记录程序运行总时间
 
 if __name__ == '__main__' :
     main()
