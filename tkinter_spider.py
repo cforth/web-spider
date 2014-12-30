@@ -7,6 +7,7 @@ from tkinter.scrolledtext import *
 import urllib.request   #网络模块
 import re               #正则表达式模块
 import codecs           #文件编码转换
+import chardet          #检测网页编码模块
 import sys
 import tkinter.font
 import tkinter.messagebox
@@ -108,8 +109,9 @@ def get_stock_info(url):
     req = urllib.request.Request(url)
     req.add_header('User-Agent', user_agent)
 
-    response = urllib.request.urlopen(req)  #抓取网页      
-    text = response.read().decode('gb2312', 'ignore')
+    data = urllib.request.urlopen(req).read()  #抓取网页
+    html_code = chardet.detect(data)           #通过chardet模块检测编码
+    text = data.decode(html_code['encoding'])
     
     stock_id = re.findall(r'\d+\.S[ZH]', str(text))                                             #正则匹配股票代码
     price_inid = re.findall(r'<span id="ctl04_lbSpj">(\d+\.\d+)</span>', str(text))             #正则匹配初始价
@@ -122,7 +124,7 @@ def get_stock_info(url):
     if len(stock_id) != 0:
         name = stock_id[0]
         sname = '1' + name[0:6] if name[-1] == 'Z' else '0' + name[0:6]
-        return '  ["{0}", "{1}", "{2}", "{3}",  "{4}", "{5}"],\n'.format(sname, trade[0], stock_date[0], price_inid[0], price_target[0], grade[0])
+        return '  ["{0}", "{1}", "{2}", "{3}",  "{4}",  "{5}"],\n'.format(sname, trade[0], stock_date[0], price_inid[0], price_target[0], grade[0])
     else:
         return ''
 
