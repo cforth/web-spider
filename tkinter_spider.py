@@ -88,7 +88,7 @@ class App(Frame):
 
         #可选，功能测试，在窗口中显示爬虫抓取后并去重的数据
         try:
-            with open('f:/temp/stock/save.txt', 'r') as f:
+            with codecs.open('f:/temp/stock/save.txt', 'r', 'utf-8') as f:
                 textoutstr = str(f.read())
 
             self.textout.insert(INSERT, textoutstr)
@@ -111,7 +111,8 @@ def get_stock_info(url):
 
     data = urllib.request.urlopen(req).read()  #抓取网页
     html_code = chardet.detect(data)           #通过chardet模块检测编码
-    text = data.decode(html_code['encoding'])
+    print(html_code['encoding'])
+    text = data.decode(html_code['encoding'], 'ignore')
     
     stock_id = re.findall(r'\d+\.S[ZH]', str(text))                                             #正则匹配股票代码
     price_inid = re.findall(r'<span id="ctl04_lbSpj">(\d+\.\d+)</span>', str(text))             #正则匹配初始价
@@ -131,7 +132,7 @@ def get_stock_info(url):
 def write_stock_file(mystr, file_name):
     """以写入方式打开文件，写入字符串mystr并自动关闭文件。
     """
-    with open(file_name, 'a') as f:
+    with codecs.open(file_name, 'a', 'utf-8') as f:
         f.write(str(mystr))
 
 
@@ -182,7 +183,7 @@ def remove_r(file_new, file_old, file_save):
     with codecs.open(file_old, 'r', 'utf-8') as f_o:
         stock_id = re.findall(r'\["(\d+)"', str(f_o.read()))
 
-    with codecs.open(file_new, 'r', 'cp936') as f_n:
+    with codecs.open(file_new, 'r', 'utf-8') as f_n:
         for line in f_n:
             stock_id_new = re.findall(r'\["(\d+)"', str(line))
             if stock_id_new[0] not in stock_id:
