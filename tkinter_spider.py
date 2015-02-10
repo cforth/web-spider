@@ -93,7 +93,7 @@ class App(Frame):
 
             self.textout.insert(INSERT, textoutstr)
         except FileNotFoundError:
-            print("FileNotFoundError!", end='')
+            print("FileNotFoundError!")
 
 #窗口模块结束
 
@@ -111,7 +111,6 @@ def get_stock_info(url):
 
     data = urllib.request.urlopen(req).read()  #抓取网页
     html_code = chardet.detect(data)           #通过chardet模块检测编码
-    print(html_code['encoding'])
     text = data.decode(html_code['encoding'], 'ignore')
     
     stock_id = re.findall(r'\d+\.S[ZH]', str(text))                                             #正则匹配股票代码
@@ -162,8 +161,7 @@ def spider_go(url_head, start, end):
         try:
             mystr = get_stock_info(url_head + str(i))
         except:
-            print('网页获取失败！终止任务！错误信息：{0}'.format(sys.exc_info()[0]))
-            return
+            print('网页获取失败！终止这次抓取！错误信息：{0}'.format(sys.exc_info()[0]))
         write_stock_file(mystr, file_name)
         print('任务进度 ({0}/{1})'.format(task_id, task_all))
         task_id = task_id + 1
