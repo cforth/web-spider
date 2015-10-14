@@ -1,16 +1,20 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-#网络爬虫0.6版
-# Python3.4.1
+
+#网络爬虫0.7版
 
 from tkinter import *   #Tk模块
 from tkinter.scrolledtext import *
+import tkinter.font
+import tkinter.messagebox
 import urllib.request   #网络模块
 import re               #正则表达式模块
 import codecs           #文件编码转换
 import chardet          #检测网页编码模块
 import sys
-import tkinter.font
-import tkinter.messagebox
+import os
+
+_temp_file_path = 'f:/temp/stock/' #临时文件目录路径，请根据操作系统自己设置
 
 ###############################################################
 #窗口模块开始
@@ -88,7 +92,7 @@ class App(Frame):
 
         #可选，功能测试，在窗口中显示爬虫抓取后并去重的数据
         try:
-            with codecs.open('f:/temp/stock/save.txt', 'r', 'utf-8') as f:
+            with codecs.open(os.path.join(_temp_file_path, 'save.txt'), 'r', 'utf-8') as f:
                 textoutstr = str(f.read())
 
             self.textout.insert(INSERT, textoutstr)
@@ -139,7 +143,6 @@ def spider_go(url_head, start, end):
     """设置网页抓取地址头部、页面ID范围。
     合成需要抓取的网页地址，在ID范围内循环抓取数据存储在mystr中。
     最后写入文件。
-    工作目录为'F:/temp/'。
     """   
     try:
         start_id = int(start)
@@ -152,7 +155,7 @@ def spider_go(url_head, start, end):
         print('序号输入有误！终止任务！起始序号必须小于或等于结束序号！')
         return
         
-    file_name = 'f:/temp/stock/new.txt'
+    file_name = os.path.join(_temp_file_path, 'new.txt')
     mystr = ''
     task_id = 1
     task_all = end_id - start_id + 1
@@ -171,12 +174,12 @@ def spider_go(url_head, start, end):
 
 def remove_r(file_new, file_old, file_save):
     """从file_new文件中去除file_old中的重复行，并将结果保存在file_save文件中。
-    注意文件读取时的编码转换,工作目录为'F:/temp/'。
+    注意文件读取时的编码转换。
     """
-    file_dir = 'f:/temp/stock/'
-    file_new = file_dir + file_new
-    file_old = file_dir + file_old
-    file_save = file_dir + file_save
+    file_dir = _temp_file_path
+    file_new = os.path.join(_temp_file_path, file_new)
+    file_old = os.path.join(_temp_file_path, file_old)
+    file_save = os.path.join(_temp_file_path, file_save)
 
     with codecs.open(file_old, 'r', 'utf-8') as f_o:
         stock_id = re.findall(r'\["(\d+)"', str(f_o.read()))
@@ -199,7 +202,7 @@ def remove_r(file_new, file_old, file_save):
 root = Tk()
     
 def main():
-    root.title('网络爬虫0.6版')
+    root.title('网络爬虫0.7版')
     root.geometry('500x500+200+100')  #窗口大小，位置
     root.maxsize(1000, 1000)          #窗口最大尺寸
     root.minsize(500, 500)
