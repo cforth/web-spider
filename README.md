@@ -1,6 +1,6 @@
 #网络爬虫
 
-![web-spider](http://img3.douban.com/view/photo/photo/public/p2274641752.jpg)
+![web-spider](http://img4.douban.com/view/photo/photo/public/p2275361527.jpg)
 
 使用Python实现，批量抓取网页上的特定内容。
 

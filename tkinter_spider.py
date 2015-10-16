@@ -34,13 +34,17 @@ class App(Frame):
         self.createWidgets()
 
     def createWidgets(self):
+        #创建一个标签，设置文字及背景属性
+        self.label = Label(text='网络爬虫（股票抓取）', font='Helvetica -24 bold', fg='snow', bg='tomato')
+        #将标签放置在窗口中的位置
+        self.label.grid(row=0, column=0, columnspan=4,sticky=W+E+N+S)
 
         #创建网址前部文本输入框
         self.label1 = Label(text='网址前部分：', font='Helvetica -15 bold')
-        self.label1.grid(row=0, column=0,sticky=E)
+        self.label1.grid(row=1, column=0, sticky=E)
         
         self.text1=Entry()
-        self.text1.grid(row=0, column=1,columnspan=3, sticky=W)
+        self.text1.grid(row=1, column=1,columnspan=3, sticky=W)
         self.contents = StringVar()
         self.contents.set("")
         self.text1["textvariable"] = self.contents
@@ -48,20 +52,20 @@ class App(Frame):
 
         #创建数字文本输入框
         self.label2 = Label(text='起始序号：', font='Helvetica -15 bold')
-        self.label2.grid(row=1, column=0,sticky=E)
+        self.label2.grid(row=2, column=0,sticky=E)
         
         self.text2=Entry()
-        self.text2.grid(row=1, column=1, sticky=W)
+        self.text2.grid(row=2, column=1, sticky=W)
         self.contents2 = StringVar()
         self.contents2.set("")
         self.text2["textvariable"] = self.contents2
         self.text2.config(font="Arial 10 bold", width=20)
 
         self.label3 = Label(text='结束序号：', font='Helvetica -15 bold')
-        self.label3.grid(row=1, column=2, sticky=E)
+        self.label3.grid(row=2, column=2, sticky=E)
         
         self.text3=Entry()
-        self.text3.grid(row=1, column=3,sticky=W)
+        self.text3.grid(row=2, column=3,sticky=W)
         self.contents3 = StringVar()
         self.contents3.set("")
         self.text3["textvariable"] = self.contents3
