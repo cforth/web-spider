@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-#网络爬虫0.7版
+#网络爬虫0.8版
 
 from tkinter import *   #Tk模块
 from tkinter.scrolledtext import *
@@ -26,61 +26,60 @@ def close_window(window):
 
 
 class App(Frame):
-    """构建窗口程序
+    """构建窗口程序,使用grid()布局
     """
     def __init__(self, master=None):
         Frame.__init__(self, master)
-        self.pack()
+        self.grid()
         self.createWidgets()
 
     def createWidgets(self):
-        #创建一个标签，设置文字及背景属性
-        self.label = Label(self, text='网络爬虫（股票抓取）', font='Helvetica -24 bold', fg='snow', bg='tomato')
-        #将标签放置在窗口中的位置
-        self.label.pack(fill='none', expand=1, ipadx=500, ipady=20, padx=1, pady=1, side='top')
 
         #创建网址前部文本输入框
-        self.label1 = Label(text='输入网页抓取网址前部分：', font='Helvetica -15 bold')
-        self.label1.pack(fill='none', expand=1, ipadx=400,side='top')
+        self.label1 = Label(text='网址前部分：', font='Helvetica -15 bold')
+        self.label1.grid(row=0, column=0,sticky=E)
+        
         self.text1=Entry()
-        self.text1.pack(fill='none', expand=1, ipadx=100, ipady=5, padx=5, pady=5, side='top')
+        self.text1.grid(row=0, column=1,columnspan=3, sticky=W)
         self.contents = StringVar()
         self.contents.set("")
         self.text1["textvariable"] = self.contents
-        self.text1.config(font="Arial 10 bold")
+        self.text1.config(font="Arial 10 bold", width=60)
 
         #创建数字文本输入框
-        self.label2 = Label(text='输入起始序号：', font='Helvetica -15 bold')
-        self.label2.pack(fill='none', expand=1, ipadx=400,side='top')
+        self.label2 = Label(text='起始序号：', font='Helvetica -15 bold')
+        self.label2.grid(row=1, column=0,sticky=E)
+        
         self.text2=Entry()
-        self.text2.pack(fill='none', expand=1, ipadx=100, ipady=5, padx=5, pady=5, side='top')
+        self.text2.grid(row=1, column=1, sticky=W)
         self.contents2 = StringVar()
         self.contents2.set("")
         self.text2["textvariable"] = self.contents2
-        self.text2.config(font="Arial 10 bold")
+        self.text2.config(font="Arial 10 bold", width=20)
 
-        self.label3 = Label(text='输入结束序号：', font='Helvetica -15 bold')
-        self.label3.pack(fill='none', expand=1, ipadx=400,side='top')
+        self.label3 = Label(text='结束序号：', font='Helvetica -15 bold')
+        self.label3.grid(row=1, column=2, sticky=E)
+        
         self.text3=Entry()
-        self.text3.pack(fill='none', expand=1, ipadx=100, ipady=5, padx=5, pady=5, side='top')
+        self.text3.grid(row=1, column=3,sticky=W)
         self.contents3 = StringVar()
         self.contents3.set("")
         self.text3["textvariable"] = self.contents3
-        self.text3.config(font="Arial 10 bold")
+        self.text3.config(font="Arial 10 bold", width=20)
 
         #创建执行结果输出文本框
-        self.textout= ScrolledText(wrap = WORD,height=10)
-        self.textout.pack(fill='none', expand=1, padx=5, pady=5, side='top')
+        self.textout= ScrolledText(wrap = WORD)
+        self.textout.grid(row=3, column=0, columnspan=4, sticky=W)
              
         #创建一个按钮，点击时运行网络爬虫
         self.hi_there = Button()
         self.hi_there['text'] = "点击股票抓取"
         self.hi_there['command'] = self.do_stock
-        self.hi_there.pack(ipadx=50, ipady=10, padx=20, pady=10, side='left')
+        self.hi_there.grid(row=4, column=0, sticky=W)
 
         #创建退出按钮
-        self.QUIT = Button(text='QUIT', fg='red', command=lambda : close_window(root))
-        self.QUIT.pack(ipadx=60, ipady=10, padx=20, pady=10, side='right')
+        self.QUIT = Button(text='  QUIT  ', fg='red', command=lambda : close_window(root))
+        self.QUIT.grid(row=4, column=3, sticky=E)
 
     def do_stock(self):
         
@@ -202,11 +201,7 @@ def remove_r(file_new, file_old, file_save):
 root = Tk()
     
 def main():
-    root.title('网络爬虫0.7版')
-    root.geometry('500x500+200+100')  #窗口大小，位置
-    root.maxsize(1000, 1000)          #窗口最大尺寸
-    root.minsize(500, 500)
-
+    root.title('网络爬虫0.8版')
 
     app = App(master=root)            #初始化窗口
     app.mainloop()                    #进入消息循环
