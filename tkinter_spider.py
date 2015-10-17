@@ -14,7 +14,7 @@ import chardet          #检测网页编码模块
 import sys
 import os
 
-_temp_file_path = 'f:/temp/stock/' #临时文件目录路径，请根据操作系统自己设置
+_temp_file_path = 'f:/temp/stock/' #工作目录路径，请根据操作系统自己设置
 
 ###############################################################
 #窗口模块开始
