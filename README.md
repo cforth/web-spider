@@ -1,13 +1,14 @@
 #网络爬虫
 
-![web-spider](http://img4.douban.com/view/photo/photo/public/p2275361527.jpg)
+![web-spider](http://img3.douban.com/view/photo/photo/public/p2276327233.jpg)
 
-使用Python3实现的网络爬虫，用于我个人抓取股票关注的数据。正在努力的重构代码中！
+使用Python3实现的网络爬虫，模块化设计后的1.0版本。根据自己需要，抓取不同网页上的数据。
 
-##[**窗口程序tk版**](https://github.com/cforth/web-spider/blob/master/tkinter_spider.py)
-Python 3 GUI库tkinter实现。
 
 ##不再维护的版本：
+
+###[**窗口程序tk版**](https://github.com/cforth/web-spider/blob/master/old/tkinter_spider.py)
+Python 3 GUI库tkinter实现。
 
 ###[**通用版**](https://github.com/cforth/web-spider/blob/master/old/spider.py)
 根据提供的正则表达式匹配规则，网页地址，页码范围，获取所有匹配的内容，以字典形式返回。
