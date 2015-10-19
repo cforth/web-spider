@@ -2,7 +2,7 @@
 
 ![web-spider](http://img4.douban.com/view/photo/photo/public/p2275361527.jpg)
 
-使用Python3实现的网络爬虫，用于我个人抓取股票关注的数据。
+使用Python3实现的网络爬虫，用于我个人抓取股票关注的数据。正在努力的重构代码中！
 
 ##[**窗口程序tk版**](https://github.com/cforth/web-spider/blob/master/tkinter_spider.py)
 Python 3 GUI库tkinter实现。
