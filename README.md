@@ -4,6 +4,28 @@
 
 使用Python3实现的网络爬虫，模块化设计后的1.0版本。根据自己需要，抓取不同网页上的数据。
 
+##使用举例
+
+1. 设置网页抓取的正则匹配规则，修改mian.py中的rules变量：
+  ```
+  rules = {   'title':r'<title>(.*)</title>',                               #匹配豆瓣图书的名称
+            'keywords':r'<meta name="keywords" content="(.*?)">',         #匹配图书的关键词
+            'intro':r'<div class="intro"><p>(.*?)</p>',                   #匹配图书的简介
+            'price':r'定价:</span>(.*?)<br/>'}                            #匹配图书的定价
+  ```
+
+2. 运行main.py
+  ```
+  python3 main.py
+  ```
+
+3. 在窗口程序中设置四个参数，点击“点击抓取”按钮。抓取结果保存在磁盘文件中。参考设置如下：
+  ```
+  #url_head = 'http://book.douban.com/subject/'
+  #start = '4866901'
+  #end = '4866912'
+  #file_name = 'finds' 
+  ```
 
 ##不再维护的版本：
 
