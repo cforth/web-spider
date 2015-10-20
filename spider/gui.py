@@ -3,7 +3,7 @@
 
 '''网络爬虫图形用户接口'''
 
-from tkinter import *   #Tk模块
+from tkinter import *  
 import tkinter.scrolledtext
 import tkinter.font
 import tkinter.messagebox
@@ -20,7 +20,7 @@ class App(Frame):
     """
     def __init__(self, spider, master=None):
         self.master = master
-        self.spider = spider                          #网络爬虫类实例化
+        self.spider = spider  #网络爬虫类实例化
         Frame.__init__(self, master)
         self.grid()
         self.createWidgets()
@@ -31,7 +31,7 @@ class App(Frame):
         #将标签放置在窗口中的位置
         self.label.grid(row=0, column=0, columnspan=4,sticky=W+E+N+S)
 
-        #创建网址前部文本输入框
+        #创建网址前部文本输入框，保存在self.url_path
         self.label1 = Label(text='网址前部分：', font='Helvetica -15 bold')
         self.label1.grid(row=1, column=0, sticky=E)
         
@@ -42,7 +42,7 @@ class App(Frame):
         self.text1["textvariable"] = self.url_path
         self.text1.config(font="Arial 10 bold", width=60)
 
-        #创建数字文本输入框
+        #创建数字文本输入框，保存在self.start_id和self.end_id
         self.label2 = Label(text='起始序号：', font='Helvetica -15 bold')
         self.label2.grid(row=2, column=0,sticky=E)
         
@@ -63,7 +63,7 @@ class App(Frame):
         self.text3["textvariable"] = self.end_id
         self.text3.config(font="Arial 10 bold", width=20)
         
-        #创建抓取结果数据文件名称输入框
+        #创建抓取结果数据文件名称输入框，保存在self.file_name
         self.label4 = Label(text='保存文件名称：', font='Helvetica -15 bold')
         self.label4.grid(row=3, column=0, sticky=E)
         
@@ -75,7 +75,7 @@ class App(Frame):
         self.text4.config(font="Arial 10 bold", width=60)
         
              
-        #创建一个按钮，点击时运行网络爬虫
+        #创建一个按钮，点击时运行网络爬虫spider的catch方法
         self.hi_there = Button(text='点击抓取', 
                                 command=lambda : self.spider.catch( str(self.url_path.get()), 
                                                                     int(self.start_id.get()), 

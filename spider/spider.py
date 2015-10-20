@@ -57,8 +57,8 @@ def get_url_info(url):
 
 class Spider(object):
     """网页爬虫类
-    从标准输入获取网址url_head、起始页序号start、终止页序号end
-    self.finds为存储抓取结果的字典
+    类实例化时，接受rules参数为正则比配规则的字典
+    finds为已经抓取到的数据（默认为空字典），delaySecs为每次抓取的延时时间（默认为1秒）
     """
     def __init__(self, rules, finds={}, delaySecs=1):
         self.rules = self.compile_rules(rules)
@@ -91,6 +91,7 @@ class Spider(object):
 
     def catch(self, url_head, start, end, file_name):
         """根据匹配规则批量抓取一些网页
+        从标准输入获取网址url_head、起始页序号start、终止页序号end、数据保存文件名file_name
         顺序为页码从小到大，函数返回一个包含所有匹配目标信息的字典。
         """
         print(file_name)
@@ -105,7 +106,7 @@ class Spider(object):
                     find_dict = self.match_text(text, self.rules)
                     self.finds[str(i)] = find_dict
                     print('页面抓取成功！页面号：{0}'.format(str(i)))
-                    time.sleep(self.delaySecs)    #设置每次抓取的延时，默认为1秒
+                    time.sleep(self.delaySecs)    #设置每次抓取的延时
                 else:
                     print('页面抓取结果已存在！不重复抓取！页面号：{0}'.format(str(i)))
             except:
