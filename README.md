@@ -8,10 +8,10 @@
 
 1. 设置网页抓取的正则匹配规则，修改mian.py中的rules变量：
   ```
-  rules = {   'title':r'<title>(.*)</title>',                               #匹配豆瓣图书的名称
-            'keywords':r'<meta name="keywords" content="(.*?)">',         #匹配图书的关键词
-            'intro':r'<div class="intro"><p>(.*?)</p>',                   #匹配图书的简介
-            'price':r'定价:</span>(.*?)<br/>'}                            #匹配图书的定价
+  rules = {   'title':r'<title>(.*)</title>',                     #匹配豆瓣图书的名称
+            'keywords':r'<meta name="keywords" content="(.*?)">', #匹配图书的关键词
+            'intro':r'<div class="intro"><p>(.*?)</p>',           #匹配图书的简介
+            'price':r'定价:</span>(.*?)<br/>'}                    #匹配图书的定价
   ```
 
 2. 运行main.py
