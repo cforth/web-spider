@@ -1,12 +1,12 @@
-#网络爬虫
+#网络爬虫1.0版
 
 ![web-spider](http://img3.douban.com/view/photo/photo/public/p2276327233.jpg)
 
-使用Python3实现的网络爬虫，模块化设计后的1.0版本。根据自己需要，抓取不同网页上的数据。
+使用Python3实现的网络爬虫，模块化设计后的1.0版本。
 
 ##使用举例
 
-1. 设置网页抓取的正则匹配规则，修改mian.py中的rules变量：
+1. 设置网页抓取的正则匹配规则，修改main.py中的rules变量：
   ```
   rules = {   'title':r'<title>(.*)</title>',                     #匹配豆瓣图书的名称
             'keywords':r'<meta name="keywords" content="(.*?)">', #匹配图书的关键词
