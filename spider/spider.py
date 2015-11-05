@@ -88,6 +88,12 @@ class Spider(object):
             find_dict[key] = rules[key].findall(text)
 
         return find_dict   
+        
+    def queue_init(self, url_head, start, end):
+        """生成抓取网页的网址队列
+        目前暂时为顺序生成
+        """
+        return [(url_head + str(i)).replace(' ', '') for i in range(start, end + 1, 1)]
 
     def catch(self, url_head, start, end, file_name):
         """根据匹配规则批量抓取一些网页
@@ -97,18 +103,18 @@ class Spider(object):
         print(file_name)
         self.load_finds(file_name)                #从磁盘恢复抓取结果对象
 
+        queue = self.queue_init(url_head, start, end)  #待抓取的网页队列
         the_page = 1
         pages = end - start + 1
-        for i in range(start, end + 1, 1):
+        for url in queue:
             try:
-                if str(i) not in self.finds:      #判断需抓取的页面是否已经抓取过，抓取过不重复抓取
-                    text = get_url_info(url_head + str(i))
-                    find_dict = self.match_text(text, self.rules)
-                    self.finds[str(i)] = find_dict
-                    print('页面抓取成功！页面号：{0}'.format(str(i)))
+                if url not in self.finds:      #判断需抓取的页面是否已经抓取过，抓取过不重复抓取
+                    find_dict = self.match_text(get_url_info(url), self.rules)
+                    self.finds[url] = find_dict
+                    print('页面抓取成功！页面：{0}'.format(url))
                     time.sleep(self.delaySecs)    #设置每次抓取的延时
                 else:
-                    print('页面抓取结果已存在！不重复抓取！页面号：{0}'.format(str(i)))
+                    print('页面抓取结果已存在！不重复抓取！页面：{0}'.format(url))
             except:
                 print('网页获取失败！错误信息：{0}'.format(sys.exc_info()[0]))
             print('任务进度({0}/{1})'.format(str(the_page), str(pages)))
